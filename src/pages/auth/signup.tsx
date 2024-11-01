@@ -7,10 +7,13 @@ import { ArrowRight, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { registerUser } from '@/services/authService'
 
 const signupSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
+  firstName: z.string().min(2, 'Name must be at least 2 characters'),
+  lastName: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
+  phone: z.string().min(10, 'Mobile number must be at least 10 characters'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
@@ -29,7 +32,16 @@ export default function Signup() {
     try {
       setIsLoading(true)
       // Here you would make your API call
-      // await registerUser(data)
+      const _data = {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        mobile: data.phone,
+        password: data.password,
+      }
+      await registerUser(_data)
+      .then(() => {})
+      .catch(() => {})  
       navigate('/login')
     } catch (error) {
       console.error(error)
@@ -49,16 +61,30 @@ export default function Signup() {
         <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Full Name</Label>
+              <Label htmlFor="firstName">First Name</Label>
               <Input
-                id="name"
+                id="firstName"
                 type="text"
-                placeholder="John Doe"
-                {...register('name')}
-                className={errors.name ? 'border-red-500' : ''}
+                placeholder="John"
+                {...register('firstName')}
+                className={errors.firstName ? 'border-red-500' : ''}
               />
-              {errors.name && (
-                <p className="text-sm text-red-500">{errors.name.message}</p>
+              {errors.firstName && (
+                <p className="text-sm text-red-500">{errors.firstName.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="lastName">Last Name</Label>
+              <Input
+                id="lastName"
+                type="text"
+                placeholder="Doe"
+                {...register('lastName')}
+                className={errors.lastName ? 'border-red-500' : ''}
+              />
+              {errors.lastName && (
+                <p className="text-sm text-red-500">{errors.lastName.message}</p>
               )}
             </div>
 
@@ -73,6 +99,20 @@ export default function Signup() {
               />
               {errors.email && (
                 <p className="text-sm text-red-500">{errors.email.message}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone</Label>
+              <Input
+                id="phone"
+                type="phone"
+                placeholder="7854652458"
+                {...register('phone')}
+                className={errors.phone ? 'border-red-500' : ''}
+              />
+              {errors.phone && (
+                <p className="text-sm text-red-500">{errors.phone.message}</p>
               )}
             </div>
 

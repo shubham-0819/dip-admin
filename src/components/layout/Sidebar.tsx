@@ -27,11 +27,11 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen }: SidebarProps) {
   const location = useLocation()
-
+  
   return (
     <aside className={cn(
       "fixed top-0 left-0 h-screen bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 z-40",
-      isOpen ? "w-64" : "w-0 md:w-64 -translate-x-full md:translate-x-0"
+      isOpen ? "w-64" : "w-0 translate-x-full md:translate-x-0 hidden"
     )}>
       <div className="flex flex-col h-full">
         <div className="p-6">

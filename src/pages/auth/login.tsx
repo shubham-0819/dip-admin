@@ -7,6 +7,7 @@ import { ArrowRight, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { login } from '@/services/authService'
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -23,18 +24,30 @@ export default function Login() {
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
     try {
       setIsLoading(true)
-      // Simulate API call with a delay
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      const { email, password } = data
+      const isLoggedIn = await login(email, password)
+      if (!isLoggedIn) {
+        alert('Invalid email or password')
+        return
+      }
+      const { accessToken, userId } = isLoggedIn.data;
+      
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('userId', userId);
+      localStorage.setItem('isAuthenticated', 'true');
       navigate('/dashboard')
     } catch (error) {
-      console.error(error)
+      console.error(error);
+      localStorage.setItem('accessToken', "");
+      localStorage.setItem('userId', "");
+      localStorage.setItem('isAuthenticated', 'false');
     } finally {
       setIsLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-200 to-gray-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-8 bg-white dark:bg-gray-800 p-8 rounded-xl shadow-2xl">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Welcome back</h2>
@@ -53,7 +66,7 @@ export default function Login() {
                 className={errors.email ? 'border-red-500' : ''}
               />
               {errors.email && (
-                <p className="text-sm text-red-500">{errors.email.message}</p>
+                <p className="text-sm text-red-500">Invalid email address</p>
               )}
             </div>
 
@@ -66,7 +79,7 @@ export default function Login() {
                 className={errors.password ? 'border-red-500' : ''}
               />
               {errors.password && (
-                <p className="text-sm text-red-500">{errors.password.message}</p>
+                <p className="text-sm text-red-500">Password must be at least 6 characters</p>
               )}
             </div>
           </div>
