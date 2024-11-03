@@ -14,6 +14,7 @@ import Specializations from './pages/dashboard/Specializations';
 import Registration from './pages/dashboard/Registration';
 import ApkLinks from './pages/dashboard/ApkLinks';
 import AdminProfile from './pages/dashboard/AdminProfile';
+import Invitations  from './pages/dashboard/Invitations';
 
 function App() {
   // For demo purposes, we'll allow access to dashboard
@@ -40,6 +41,8 @@ function App() {
           <Route path="brands" element={<Brands />} />
           <Route path="specializations" element={<Specializations />} />
           <Route path="registration" element={<Registration />} />
+          <Route path="invitation" element={<Invitations />} />
+
           <Route path="apk-links" element={<ApkLinks />} />
           <Route path="profile" element={<AdminProfile />} />
         </Route>

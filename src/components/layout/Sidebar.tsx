@@ -9,6 +9,7 @@ import {
   Link as LinkIcon,
   Smartphone,
   Settings,
+  MailOpen
 } from 'lucide-react'
 
 const navItems = [
@@ -17,6 +18,7 @@ const navItems = [
   { icon: Building2, label: 'Brands', path: '/dashboard/brands' },
   { icon: Stethoscope, label: 'Specializations', path: '/dashboard/specializations' },
   { icon: LinkIcon, label: 'Registration Links', path: '/dashboard/registration' },
+  { icon: MailOpen, label: 'Invitation', path: '/dashboard/invitation' },
   { icon: Smartphone, label: 'APK Links', path: '/dashboard/apk-links' },
   { icon: Settings, label: 'Admin Profile', path: '/dashboard/profile' },
 ]
