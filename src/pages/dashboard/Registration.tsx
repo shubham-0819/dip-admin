@@ -45,9 +45,10 @@ export default function Registration() {
 
   useEffect(() => {
     const fetchBrands = async () => {
-      const data = await getbrandList();
-      if (data) {
-        const brandData = data.data.map((brand) => ({
+      const res = await getbrandList();
+      const brands = res.data.data;
+      if (brands) {
+        const brandData = brands.map((brand) => ({
           id: brand._id,
           name: brand.name,
         }));

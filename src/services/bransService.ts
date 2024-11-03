@@ -3,17 +3,11 @@ import { API_URL } from "../config";
 const ACCESS_TOKEN = localStorage.getItem("accessToken");
 
 export const getbrandList = async () => {
-  try {
-    const response = await axios.get(`${API_URL}/brand/list`, {
-      headers: {
-        Authorization: `Bearer ${ACCESS_TOKEN}`,
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
+  return axios.get(`${API_URL}/brand/list`, {
+    headers: {
+      Authorization: `Bearer ${ACCESS_TOKEN}`,
+    },
+  });
 };
 
 export const getbrand = async (id: string) => {

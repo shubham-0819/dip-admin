@@ -9,7 +9,8 @@ import {
   Link as LinkIcon,
   Smartphone,
   Settings,
-  MailOpen
+  MailOpen,
+  LogOut
 } from 'lucide-react'
 
 const navItems = [
@@ -22,6 +23,11 @@ const navItems = [
   { icon: Smartphone, label: 'APK Links', path: '/dashboard/apk-links' },
   { icon: Settings, label: 'Admin Profile', path: '/dashboard/profile' },
 ]
+
+const logout = () => {
+  localStorage.removeItem('accessToken')
+  window.location.href = '/login'
+}
 
 interface SidebarProps {
   isOpen: boolean
@@ -56,6 +62,12 @@ export default function Sidebar({ isOpen }: SidebarProps) {
             )
           })}
         </nav>
+        <div className="p-4">
+          <Button onClick={logout} variant="ghost" className="w-full justify-start hover:text-red-600 hover:bg-red-50">
+            <LogOut className="mr-2 h-4 w-4" />
+            Logout
+          </Button>
+        </div>
       </div>
     </aside>
   )

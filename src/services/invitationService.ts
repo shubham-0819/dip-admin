@@ -22,61 +22,33 @@ export const getInvitations = async () => {
   }
 };
 
-export const sendInvitation = async (data: Invitation) => {
-  try {
-    const response = await axios.post(
-      `${API_URL}/subadmin/sendInvitation`,
-      data,
-      {
-        headers: {
-          Authorization: `Bearer ${ACCESS_TOKEN}`,
-        },
-      }
-    );
-
-    return response.data;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
+export const sendInvitation = async (data) => {
+  return axios.post(`${API_URL}/subadmin/sendInvitation`, data, {
+    headers: {
+      Authorization: `Bearer ${ACCESS_TOKEN}`,
+    },
+  });
 };
 
 export const resendInvitation = async (id: string) => {
-  try {
-    const response = await axios.post(
-      `${API_URL}/subadmin/resendInvitation`,
-      { invitationId: id },
-      {
-        headers: {
-          Authorization: `Bearer ${ACCESS_TOKEN}`,
-        },
-      }
-    );
-
-    return response.data;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
+  return axios.put(
+    `${API_URL}/subadmin/resendInvitation`,
+    { invitationId: id },
+    {
+      headers: {
+        Authorization: `Bearer ${ACCESS_TOKEN}`,
+      },
+    }
+  );
 };
 
 export const deleteInvitation = async (id: string) => {
-  try {
-    const response = await axios.delete(
-      `${API_URL}/subadmin/deleteInvitation`,
-      {
-        data: { invitationId: id },
-        headers: {
-          Authorization: `Bearer ${ACCESS_TOKEN}`,
-        },
-      }
-    );
-
-    return response.data;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
+  return axios.delete(`${API_URL}/subadmin/deleteInvitation`, {
+    data: { invitationId: id },
+    headers: {
+      Authorization: `Bearer ${ACCESS_TOKEN}`,
+    },
+  });
 };
 
 interface Invitation {

@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { login } from '@/services/authService'
+import { useToast } from '@/hooks/use-toast'
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -20,6 +21,7 @@ export default function Login() {
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(loginSchema),
   })
+  const { toast } = useToast()
 
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
     try {
@@ -27,7 +29,10 @@ export default function Login() {
       const { email, password } = data
       const isLoggedIn = await login(email, password)
       if (!isLoggedIn) {
-        alert('Invalid email or password')
+        toast({
+          title: 'Invalid email or password',
+          variant: 'destructive',
+        })
         return
       }
       const { accessToken, userId } = isLoggedIn.data;
@@ -35,7 +40,11 @@ export default function Login() {
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('userId', userId);
       localStorage.setItem('isAuthenticated', 'true');
-      navigate('/dashboard')
+      setTimeout(() => {
+        // navigate('/dashboard')
+        window.location.href = '/dashboard';
+      }, 500);
+
     } catch (error) {
       console.error(error);
       localStorage.setItem('accessToken', "");

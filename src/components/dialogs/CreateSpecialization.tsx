@@ -57,7 +57,7 @@ export function CreateSpecializationDialog({
                 />
                 <img
                   id="avatar"
-                  src=""
+                  src="https://placehold.co/400x400"
                   alt="Specialization Icon"
                   className="w-24 h-24 rounded-full object-cover"
                 />

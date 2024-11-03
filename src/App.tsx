@@ -17,8 +17,7 @@ import AdminProfile from './pages/dashboard/AdminProfile';
 import Invitations  from './pages/dashboard/Invitations';
 
 function App() {
-  // For demo purposes, we'll allow access to dashboard
-  const isAuthenticated = true;
+  const isAuthenticated = localStorage.getItem('accessToken');
 
   return (
     <Router>

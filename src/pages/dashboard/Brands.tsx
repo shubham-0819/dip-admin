@@ -29,10 +29,12 @@ export default function Brands() {
   useEffect(() => {
     const fetchBrands = async () => {
       setIsLoading(true);
-      const data = await getbrandList();
+      const res = await getbrandList();
+      const brands = res.data.data;
       setIsLoading(false);
-      if (data) {
-        setBrands(data.data);
+      
+      if (brands) {
+        setBrands(brands);
       }
     };
     fetchBrands();
@@ -147,8 +149,9 @@ export default function Brands() {
               updatedBy: userId,
             }
             await createBrand(brandData);
-            const updatedList = await getbrandList();
-            setBrands(updatedList.data);
+            const res = await getbrandList();
+            const updatedList = res.data.data;
+            setBrands(updatedList);
             toast({
               variant: "default",
               title: "Brand Created",
