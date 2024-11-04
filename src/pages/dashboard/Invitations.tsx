@@ -79,21 +79,6 @@ export default function Invitations() {
     fetchMetadata();
   }, []);
 
-  const handleResend = async (invitation) => {
-    try {
-      await resendInvitation(invitation.id);
-      toast({
-        title: "Invitation resent successfully",
-      });
-    } catch (error) {
-      toast({
-        title: "Failed to resend invitation",
-        description: error.response?.data?.message,
-        variant: "destructive",
-      });
-    }
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">

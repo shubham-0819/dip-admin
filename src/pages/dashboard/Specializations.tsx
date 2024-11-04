@@ -20,7 +20,7 @@ export default function Specializations() {
     const fetchBrands = async () => {
       const data = await getSpecializations();
       if (data) {
-        setSpecializations(data.data);
+        setSpecializations(data.data||[]);
       }
     };
     fetchBrands();

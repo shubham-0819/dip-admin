@@ -1,9 +1,12 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { User, Mail, Phone, MapPin } from 'lucide-react'
+import { User, Mail, Phone, MapPin } from 'lucide-react';
+import { useState } from 'react';
+import { ChangePassword } from '@/components/dialogs/ChangePassword'
 
 export default function AdminProfile() {
+  const [openChangePassword, setOpenChangePassword] = useState(false);
   return (
     <div className="space-y-6">
       <div>
@@ -83,12 +86,21 @@ export default function AdminProfile() {
           <div className="rounded-xl border bg-card text-card-foreground shadow-sm p-6">
             <h3 className="font-semibold text-lg mb-4">Security</h3>
             <div className="space-y-4">
-              <Button variant="outline" className="w-full">Change Password</Button>
+              <Button variant="outline" className="w-full"
+                onClick={() => { setOpenChangePassword(true) }}
+              >Change Password</Button>
               <Button variant="outline" className="w-full">Enable 2FA</Button>
             </div>
           </div>
         </div>
       </div>
+      <ChangePassword 
+        open={openChangePassword} 
+        onClose={() => { setOpenChangePassword(false) }}
+        onSubmit={() => { 
+          console.log('Change password form submitted')
+          setOpenChangePassword(false)
+        }} />
     </div>
   )
 }
