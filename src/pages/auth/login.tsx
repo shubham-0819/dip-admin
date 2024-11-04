@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -16,7 +16,8 @@ const loginSchema = z.object({
 })
 
 export default function Login() {
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate()
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(loginSchema),
@@ -40,11 +41,9 @@ export default function Login() {
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('userId', userId);
       localStorage.setItem('isAuthenticated', 'true');
-      setTimeout(() => {
-        // navigate('/dashboard')
-        window.location.href = '/dashboard';
-      }, 500);
-
+      console.log('Logged in successfully')
+      setIsLoggedIn(true);
+      navigate('/dashboard')
     } catch (error) {
       console.error(error);
       localStorage.setItem('accessToken', "");
@@ -53,7 +52,16 @@ export default function Login() {
     } finally {
       setIsLoading(false)
     }
+
+
   }
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigate('/dashboard')
+    }
+    // console.log('isLoggedIn', isLoggedIn) 
+  }, [isLoggedIn, navigate])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-200 to-gray-100 flex items-center justify-center p-4">

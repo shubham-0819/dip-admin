@@ -20,7 +20,9 @@ function App() {
   const isAuthenticated = localStorage.getItem('accessToken');
 
   return (
-    <Router>
+    <Router
+      basename='/dip-admin'
+    >
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
