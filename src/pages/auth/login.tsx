@@ -40,10 +40,8 @@ export default function Login() {
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('userId', userId);
       localStorage.setItem('isAuthenticated', 'true');
-      setTimeout(() => {
-        // navigate('/dashboard')
-        window.location.href = '/dashboard';
-      }, 500);
+      console.log('Logged in successfully');
+      navigate('/dashboard');
 
     } catch (error) {
       console.error(error);

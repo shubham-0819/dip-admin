@@ -1,5 +1,5 @@
 import {
-  BrowserRouter as Router,
+  HashRouter,
   Routes,
   Route,
   Navigate,
@@ -20,7 +20,7 @@ function App() {
   const isAuthenticated = localStorage.getItem('accessToken');
 
   return (
-    <Router>
+    <HashRouter>
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
@@ -48,7 +48,7 @@ function App() {
 
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
       </Routes>
-    </Router>
+    </HashRouter>
   );
 }
 
