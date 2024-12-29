@@ -4,7 +4,7 @@ const ACCESS_TOKEN = localStorage.getItem("accessToken");
 
 interface AdminData {
   _id?: string;
-  firstName: string;
+  name: string;
   lastName: string;
   email: string;
   mobile: string;

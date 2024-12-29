@@ -6,6 +6,7 @@ const ACCESS_TOKEN = localStorage.getItem("accessToken");
 interface SubAdminData {
   _id?: string;
   name: string;
+  canSendNoti: boolean;
   password?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -13,7 +14,7 @@ interface SubAdminData {
 
 export const subAdminService = {
   // Get list of all sub-admins
-  getAll: async () => {
+  getAll: async (): Promise<SubAdminData> => {
     const response = await axios.get(`${API_URL}/admin/subAdmin/get`, {
       headers: { Authorization: `Bearer ${ACCESS_TOKEN}` }
     })

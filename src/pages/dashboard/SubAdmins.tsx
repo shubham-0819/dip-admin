@@ -68,7 +68,6 @@ export default function SubAdmins() {
           <TableHeader>
             <TableRow>
               <TableHead>Name</TableHead>
-              <TableHead>Created At</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -77,7 +76,6 @@ export default function SubAdmins() {
             {filteredSubAdmins.map((admin) => (
               <TableRow key={admin._id}>
                 <TableCell className="font-medium">{admin.name}</TableCell>
-                <TableCell>{new Date(admin.createdAt).toLocaleDateString()}</TableCell>
                 <TableCell>
                   <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-800">
                     Active
