@@ -1,6 +1,15 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Plus, Search } from "lucide-react";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import {
   getSpecializations,
   createSpecialization,
@@ -15,6 +24,7 @@ export default function Specializations() {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [specializations, setSpecializations] = useState([]);
   const [selectedSpecialization, setSelectedSpecialization] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -26,6 +36,10 @@ export default function Specializations() {
     fetchBrands();
   }, []);
 
+  const filteredSpecializations = specializations.filter((spec) =>
+    spec.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -35,64 +49,77 @@ export default function Specializations() {
             Manage medical specializations here.
           </p>
         </div>
-        <Button onClick={() => setOpenCreateModal(true)}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Specialization
-        </Button>
+        <div className="flex gap-4 items-center">
+          <div className="relative">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search specializations..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-8 w-[250px]"
+            />
+          </div>
+          <Button onClick={() => setOpenCreateModal(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Specialization
+          </Button>
+        </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
-        {specializations.map((spec) => (
-          <div
-            key={spec._id}
-            className="rounded-xl border bg-card text-card-foreground shadow-sm"
-          >
-            {spec?.icons[0] && (
-              <div className="flex justify-center mt-4">
-                <img
-                  src={spec.icons[0].url}
-                  alt={spec.name}
-                  className="w-16 h-16 rounded-full object-cover"
-                />
-              </div>
-            )}
-            <div className="px-6 w-full flex justify-center">
-              <h3 className="text-lg font-semibold mb-2">{spec.name}</h3>
-            </div>
-            <div className="p-6">
-              <p className="text-sm text-muted-foreground mb-4">
-                {spec.description}
-              </p>
-              <div className="flex items-center justify-between">
-                {/* <span className="text-sm font-medium">
-                  {spec.doctors} Doctors
-                </span> */}
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setSelectedSpecialization(spec);
-                    }}
-                  >
-                    Edit
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="text-red-500"
-                    onClick={() => {
-                      setSelectedSpecialization(spec);
-                      setOpenDeleteModal(true);
-                    }}
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Icon</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Description</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredSpecializations.map((spec) => (
+              <TableRow key={spec._id}>
+                <TableCell>
+                  {spec?.icons[0] && (
+                    <img
+                      src={spec.icons[0].url}
+                      alt={spec.name}
+                      className="w-8 h-8 rounded-full object-cover"
+                    />
+                  )}
+                </TableCell>
+                <TableCell className="font-medium">{spec.name}</TableCell>
+                <TableCell className="text-muted-foreground">
+                  {spec.description}
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setSelectedSpecialization(spec);
+                      }}
                     >
-                    Delete
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        ))}
+                      Edit
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-red-500"
+                      onClick={() => {
+                        setSelectedSpecialization(spec);
+                        setOpenDeleteModal(true);
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </div>
 
       <DeleteSpecializationDialog

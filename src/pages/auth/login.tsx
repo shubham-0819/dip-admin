@@ -15,10 +15,12 @@ const loginSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters'),
 })
 
+type LoginFormData = z.infer<typeof loginSchema>
+
 export default function Login() {
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
   })
   const { toast } = useToast()
@@ -41,7 +43,7 @@ export default function Login() {
       localStorage.setItem('userId', userId);
       localStorage.setItem('isAuthenticated', 'true');
       console.log('Logged in successfully');
-      navigate('/dashboard');
+      navigate('/dashboard', { replace: true });
 
     } catch (error) {
       console.error(error);

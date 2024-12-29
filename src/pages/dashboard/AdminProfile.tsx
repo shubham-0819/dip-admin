@@ -2,11 +2,29 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { User, Mail, Phone, MapPin } from 'lucide-react';
-import { useState } from 'react';
-import { ChangePassword } from '@/components/dialogs/ChangePassword'
+import { useEffect, useState } from 'react';
+import { ChangePassword } from '@/components/dialogs/ChangePassword';
+import { getAdminProfile } from '@/services/adminService';
 
 export default function AdminProfile() {
   const [openChangePassword, setOpenChangePassword] = useState(false);
+  const [adminData, setAdminData] = useState<any>(null);
+  const [fullName, setFullName] = useState<string>('');
+
+  useEffect(() => {
+    const fetchAdminDetails = async () => {
+      const id = localStorage.getItem('userId');
+      if (!id) return;
+      const adminDetail = await getAdminProfile(id);
+      setFullName(adminDetail.data.firstName + ' ' + adminDetail.data.lastName);
+     
+      setAdminData(adminDetail.data);
+    };
+
+    fetchAdminDetails();
+  }, []);
+
+
   return (
     <div className="space-y-6">
       <div>
@@ -24,6 +42,7 @@ export default function AdminProfile() {
                 id="name"
                 placeholder="John Doe"
                 className="pl-10"
+                defaultValue={fullName}
               />
             </div>
           </div>
@@ -37,6 +56,7 @@ export default function AdminProfile() {
                 type="email"
                 placeholder="john@example.com"
                 className="pl-10"
+                defaultValue={adminData?.email}
               />
             </div>
           </div>
@@ -49,27 +69,16 @@ export default function AdminProfile() {
                 id="phone"
                 placeholder="+1 (555) 000-0000"
                 className="pl-10"
+                defaultValue={adminData?.mobile}
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="address">Address</Label>
-            <div className="relative">
-              <MapPin className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                id="address"
-                placeholder="123 Main St, City, Country"
-                className="pl-10"
-              />
-            </div>
-          </div>
-
-          <Button className="w-full">Save Changes</Button>
+          {/* <Button className="w-full">Save Changes</Button> */}
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-xl border bg-card text-card-foreground shadow-sm p-6">
+          {/* <div className="rounded-xl border bg-card text-card-foreground shadow-sm p-6">
             <h3 className="font-semibold text-lg mb-4">Profile Picture</h3>
             <div className="flex items-center justify-center p-6 border-2 border-dashed rounded-lg">
               <div className="text-center">
@@ -81,17 +90,16 @@ export default function AdminProfile() {
                 <Button variant="outline">Change Picture</Button>
               </div>
             </div>
-          </div>
+          </div> */}
 
-          <div className="rounded-xl border bg-card text-card-foreground shadow-sm p-6">
+          {/* <div className="rounded-xl border bg-card text-card-foreground shadow-sm p-6">
             <h3 className="font-semibold text-lg mb-4">Security</h3>
             <div className="space-y-4">
               <Button variant="outline" className="w-full"
                 onClick={() => { setOpenChangePassword(true) }}
               >Change Password</Button>
-              <Button variant="outline" className="w-full">Enable 2FA</Button>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
       <ChangePassword 

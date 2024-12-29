@@ -15,40 +15,46 @@ import Registration from './pages/dashboard/Registration';
 import ApkLinks from './pages/dashboard/ApkLinks';
 import AdminProfile from './pages/dashboard/AdminProfile';
 import Invitations  from './pages/dashboard/Invitations';
+import Logs from './pages/dashboard/Logs';
+import Admins from './pages/dashboard/Admins';
+import { ThemeProvider } from 'next-themes';
 
 function App() {
   const isAuthenticated = localStorage.getItem('accessToken');
 
   return (
-    <HashRouter>
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/signup" element={<Signup />} />
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <HashRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
 
-        <Route
-          path="/dashboard"
-          element={
-            isAuthenticated ? (
-              <DashboardLayout />
-            ) : (
-              <Navigate to="/login" replace />
-            )
-          }
-        >
-          <Route index element={<Overview />} />
-          <Route path="doctors" element={<Doctors />} />
-          <Route path="brands" element={<Brands />} />
-          <Route path="specializations" element={<Specializations />} />
-          <Route path="registration" element={<Registration />} />
-          <Route path="invitation" element={<Invitations />} />
+          <Route
+            path="/dashboard"
+            element={
+              isAuthenticated ? (
+                <DashboardLayout />
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          >
+            <Route index element={<Overview />} />
+            <Route path="doctors" element={<Doctors />} />
+            <Route path="brands" element={<Brands />} />
+            <Route path="specializations" element={<Specializations />} />
+            <Route path="registration" element={<Registration />} />
+            <Route path="invitation" element={<Invitations />} />
+            <Route path="logs" element={<Logs />} />
+            <Route path="apk-links" element={<ApkLinks />} />
+            <Route path="profile" element={<AdminProfile />} />
+            <Route path="admins" element={<Admins />} />
+          </Route>
 
-          <Route path="apk-links" element={<ApkLinks />} />
-          <Route path="profile" element={<AdminProfile />} />
-        </Route>
-
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      </Routes>
-    </HashRouter>
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </HashRouter>
+    </ThemeProvider>
   );
 }
 
