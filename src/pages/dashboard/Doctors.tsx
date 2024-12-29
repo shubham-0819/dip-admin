@@ -1,34 +1,90 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Plus, Search, Stethoscope } from "lucide-react";
+import { DataTable } from "@/components/ui/data-table";
 import { getDoctors } from "@/services/doctorService";
 import { DeleteDoctorDialog } from "@/components/dialogs/DeleteDoctor";
-// import { EditDoctorDialog } from "@/components/dialogs/EditDoctor";
 import { CreateDoctorSheet } from "@/components/dialogs/CreateDoctor";
+import { Badge } from "@/components/ui/badge";
 
 export default function Doctors() {
   const [doctors, setDoctors] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
-  // const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openAddDialog, setOpenAddDialog] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  useEffect(() => {
-    getDoctors().then((data) => {
-      console.log(data);
-      const doctors = data.data.map((doctor) => ({
+  const loadDoctors = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const response = await getDoctors();
+      const formattedDoctors = response.data.map((doctor) => ({
         id: doctor._id,
         name: doctor.personalInfo.name,
         email: doctor.personalInfo.email,
         phone: doctor.personalInfo.phone,
-        // city: doctor.personalInfo.city,
         specialization: doctor.specialization,
         experience: doctor.experience,
         status: doctor.isDeleted ? "Inactive" : "Active",
       }));
-      setDoctors(doctors);
-    });
+      setDoctors(formattedDoctors);
+    } catch (err) {
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadDoctors();
   }, []);
+
+  const filteredDoctors = doctors.filter(doctor =>
+    doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    doctor.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    doctor.phone.includes(searchTerm)
+  );
+
+  const columns = [
+    { header: "Name", accessorKey: "name" },
+    { header: "Phone", accessorKey: "phone" },
+    { header: "Email", accessorKey: "email" },
+    { 
+      header: "Status", 
+      accessorKey: "status",
+      cell: (doctor) => (
+        <Badge variant={doctor.status === "Active" ? "success" : "destructive"}>
+          {doctor.status}
+        </Badge>
+      )
+    },
+    {
+      header: "Actions",
+      accessorKey: "id",
+      cell: (doctor) => (
+        <div className="flex gap-2">
+          <Button variant="ghost" size="sm">
+            Edit
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-red-500"
+            onClick={() => {
+              setSelectedDoctor(doctor);
+              setOpenDeleteDialog(true);
+            }}
+          >
+            Delete
+          </Button>
+        </div>
+      )
+    }
+  ];
 
   return (
     <div className="space-y-6">
@@ -39,75 +95,42 @@ export default function Doctors() {
             Manage your registered doctors here.
           </p>
         </div>
-        <Button
-          onClick={() => setOpenAddDialog(true)}
-          className="flex items center"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Add Doctor
-        </Button>
+        <div className="flex gap-4 items-center">
+          <div className="relative">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search doctors..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-8 w-[250px]"
+            />
+          </div>
+          <Button onClick={() => setOpenAddDialog(true)}>
+            <Plus className="mr-2 h-4 w-4" />
+            Add Doctor
+          </Button>
+        </div>
       </div>
 
       <div className="rounded-md border">
-        <div className="relative w-full overflow-auto">
-          <table className="w-full caption-bottom text-sm">
-            <thead className="[&_tr]:border-b">
-              <tr className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted">
-                <th className="h-12 px-4 text-left align-middle font-medium">
-                  Name
-                </th>
-                <th className="h-12 px-4 text-left align-middle font-medium">
-                  Phone
-                </th>
-                <th className="h-12 px-4 text-left align-middle font-medium">
-                  Email
-                </th>
-                {/* <th className="h-12 px-4 text-left align-middle font-medium">City</th> */}
-                <th className="h-12 px-4 text-left align-middle font-medium">
-                  Status
-                </th>
-
-                <th className="h-12 px-4 text-left align-middle font-medium">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="[&_tr:last-child]:border-0">
-              {doctors.map((doctor) => (
-                <tr
-                  key={doctor.id}
-                  className="border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted"
-                >
-                  <td className="p-4 align-middle">{doctor.name}</td>
-                  <td className="p-4 align-middle">{doctor.phone}</td>
-                  <td className="p-4 align-middle">{doctor.email}</td>
-                  {/* <td className="p-4 align-middle">{doctor.city}</td> */}
-                  <td className="p-4 align-middle">
-                    <span className="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium bg-green-100 text-green-800">
-                      {doctor.status}
-                    </span>
-                  </td>
-                  <td className="p-4 align-middle">
-                    <div className="flex gap-2">
-                      <Button variant="ghost" size="sm">
-                        Edit
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-red-500"
-                        onClick={() => setOpenDeleteDialog(true)}
-                      >
-                        Delete
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <DataTable
+          data={filteredDoctors}
+          columns={columns}
+          isLoading={isLoading}
+          error={error}
+          onRetry={loadDoctors}
+          emptyState={{
+            title: "No doctors found",
+            description: "Get started by adding your first doctor.",
+            icon: <Stethoscope className="h-8 w-8 text-muted-foreground" />,
+            action: {
+              label: "Add Doctor",
+              onClick: () => setOpenAddDialog(true)
+            }
+          }}
+        />
       </div>
+
       <DeleteDoctorDialog
         open={openDeleteDialog}
         onClose={() => setOpenDeleteDialog(false)}
@@ -115,16 +138,8 @@ export default function Doctors() {
           console.log("confirm");
           setOpenDeleteDialog(false);
         }}
+        doctorName={selectedDoctor?.name}
       />
-
-      {/* <EditDoctorDialog
-        open={openEditDialog}
-        onClose={() => setOpenEditDialog(false)}
-        onConfirm={() => {
-          console.log("confirm");
-          setOpenEditDialog(false);
-        }}
-      /> */}
 
       <CreateDoctorSheet
         open={openAddDialog}
@@ -143,14 +158,12 @@ export default function Doctors() {
           { id: "2", name: "Brand 2" },
           { id: "3", name: "Brand 3" },
         ]}
-
         cities={[
           { id: "1", name: "City 1" },
           { id: "2", name: "City 2" },
           { id: "3", name: "City 3" },
         ]}
       />
-
     </div>
   );
 }

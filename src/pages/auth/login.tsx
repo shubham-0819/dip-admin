@@ -1,66 +1,64 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
-import { ArrowRight, Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { login } from '@/services/authService'
-import { useToast } from '@/hooks/use-toast'
+import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { ArrowRight, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { login } from '@/services/authService';
+import { useToast } from '@/hooks/use-toast';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
-})
+});
 
-type LoginFormData = z.infer<typeof loginSchema>
+type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function Login() {
-  const [isLoading, setIsLoading] = useState(false)
-  const navigate = useNavigate()
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
   const { register, handleSubmit, formState: { errors } } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-  })
-  const { toast } = useToast()
+  });
+  const { toast } = useToast();
 
   const onSubmit = async (data: z.infer<typeof loginSchema>) => {
     try {
-      setIsLoading(true)
-      const { email, password } = data
-      const isLoggedIn = await login(email, password)
+      setIsLoading(true);
+      const { email, password } = data;
+      const isLoggedIn = await login(email, password);
       if (!isLoggedIn) {
         toast({
           title: 'Invalid email or password',
           variant: 'destructive',
-        })
-        return
+        });
+        return;
       }
       const { accessToken, userId } = isLoggedIn.data;
       
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('userId', userId);
       localStorage.setItem('isAuthenticated', 'true');
-      console.log('Logged in successfully');
-      navigate('/dashboard', { replace: true });
-
+      navigate('/#/dashboard');
     } catch (error) {
       console.error(error);
-      localStorage.setItem('accessToken', "");
-      localStorage.setItem('userId', "");
-      localStorage.setItem('isAuthenticated', 'false');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('userId');
+      localStorage.removeItem('isAuthenticated');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-200 to-gray-100 flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8 bg-white dark:bg-gray-800 p-8 rounded-xl shadow-2xl">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-8 bg-card dark:bg-card p-8 rounded-xl shadow-lg border border-border">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Welcome back</h2>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">Please sign in to your account</p>
+          <h2 className="text-3xl font-bold text-foreground">Welcome back</h2>
+          <p className="mt-2 text-muted-foreground">Please sign in to your account</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
@@ -72,10 +70,10 @@ export default function Login() {
                 type="email"
                 placeholder="you@example.com"
                 {...register('email')}
-                className={errors.email ? 'border-red-500' : ''}
+                className={errors.email ? 'border-destructive' : ''}
               />
               {errors.email && (
-                <p className="text-sm text-red-500">Invalid email address</p>
+                <p className="text-sm text-destructive">{errors.email.message}</p>
               )}
             </div>
 
@@ -85,10 +83,10 @@ export default function Login() {
                 id="password"
                 type="password"
                 {...register('password')}
-                className={errors.password ? 'border-red-500' : ''}
+                className={errors.password ? 'border-destructive' : ''}
               />
               {errors.password && (
-                <p className="text-sm text-red-500">Password must be at least 6 characters</p>
+                <p className="text-sm text-destructive">{errors.password.message}</p>
               )}
             </div>
           </div>
@@ -113,11 +111,11 @@ export default function Login() {
         </form>
 
         <div className="mt-4 text-center">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-sm text-muted-foreground">
             Don't have an account?{' '}
             <Link
-              to="/signup"
-              className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
+              to="/#/signup"
+              className="font-medium text-primary hover:text-primary/90"
             >
               Sign up
             </Link>
@@ -125,5 +123,5 @@ export default function Login() {
         </div>
       </div>
     </div>
-  )
+  );
 }

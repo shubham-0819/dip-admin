@@ -1,13 +1,14 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
-import { ArrowRight, Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { registerUser } from '@/services/authService'
+import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { ArrowRight, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { registerUser } from '@/services/authService';
+import { useToast } from '@/hooks/use-toast';
 
 const signupSchema = z.object({
   firstName: z.string().min(2, 'Name must be at least 2 characters'),
@@ -19,73 +20,78 @@ const signupSchema = z.object({
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
-})
+});
+
+type SignupFormData = z.infer<typeof signupSchema>;
 
 export default function Signup() {
-  const [isLoading, setIsLoading] = useState(false)
-  const navigate = useNavigate()
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { register, handleSubmit, formState: { errors } } = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
-  })
+  });
 
-  const onSubmit = async (data: z.infer<typeof signupSchema>) => {
+  const onSubmit = async (data: SignupFormData) => {
     try {
-      setIsLoading(true)
-      // Here you would make your API call
-      const _data = {
+      setIsLoading(true);
+      await registerUser({
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
         mobile: data.phone,
         password: data.password,
-      }
-      await registerUser(_data)
-      .then(() => {})
-      .catch(() => {})  
-      navigate('/login')
+      });
+      toast({
+        title: "Account created successfully",
+        description: "Please sign in with your credentials",
+      });
+      navigate('/#/login');
     } catch (error) {
-      console.error(error)
+      toast({
+        title: "Error creating account",
+        description: error.response?.data?.message || "Something went wrong",
+        variant: "destructive",
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-8 bg-white dark:bg-gray-800 p-8 rounded-xl shadow-2xl">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-8 bg-card dark:bg-card p-8 rounded-xl shadow-lg border border-border">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-900 dark:text-white">Create an account</h2>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">Join us today</p>
+          <h2 className="text-3xl font-bold text-foreground">Create an account</h2>
+          <p className="mt-2 text-muted-foreground">Join us today</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
           <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="firstName">First Name</Label>
-              <Input
-                id="firstName"
-                type="text"
-                placeholder="John"
-                {...register('firstName')}
-                className={errors.firstName ? 'border-red-500' : ''}
-              />
-              {errors.firstName && (
-                <p className="text-sm text-red-500">{errors.firstName.message}</p>
-              )}
-            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="firstName">First Name</Label>
+                <Input
+                  id="firstName"
+                  {...register('firstName')}
+                  className={errors.firstName ? 'border-destructive' : ''}
+                />
+                {errors.firstName && (
+                  <p className="text-sm text-destructive">{errors.firstName.message}</p>
+                )}
+              </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="lastName">Last Name</Label>
-              <Input
-                id="lastName"
-                type="text"
-                placeholder="Doe"
-                {...register('lastName')}
-                className={errors.lastName ? 'border-red-500' : ''}
-              />
-              {errors.lastName && (
-                <p className="text-sm text-red-500">{errors.lastName.message}</p>
-              )}
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input
+                  id="lastName"
+                  {...register('lastName')}
+                  className={errors.lastName ? 'border-destructive' : ''}
+                />
+                {errors.lastName && (
+                  <p className="text-sm text-destructive">{errors.lastName.message}</p>
+                )}
+              </div>
             </div>
 
             <div className="space-y-2">
@@ -93,12 +99,11 @@ export default function Signup() {
               <Input
                 id="email"
                 type="email"
-                placeholder="you@example.com"
                 {...register('email')}
-                className={errors.email ? 'border-red-500' : ''}
+                className={errors.email ? 'border-destructive' : ''}
               />
               {errors.email && (
-                <p className="text-sm text-red-500">{errors.email.message}</p>
+                <p className="text-sm text-destructive">{errors.email.message}</p>
               )}
             </div>
 
@@ -106,13 +111,12 @@ export default function Signup() {
               <Label htmlFor="phone">Phone</Label>
               <Input
                 id="phone"
-                type="phone"
-                placeholder="7854652458"
+                type="tel"
                 {...register('phone')}
-                className={errors.phone ? 'border-red-500' : ''}
+                className={errors.phone ? 'border-destructive' : ''}
               />
               {errors.phone && (
-                <p className="text-sm text-red-500">{errors.phone.message}</p>
+                <p className="text-sm text-destructive">{errors.phone.message}</p>
               )}
             </div>
 
@@ -122,10 +126,10 @@ export default function Signup() {
                 id="password"
                 type="password"
                 {...register('password')}
-                className={errors.password ? 'border-red-500' : ''}
+                className={errors.password ? 'border-destructive' : ''}
               />
               {errors.password && (
-                <p className="text-sm text-red-500">{errors.password.message}</p>
+                <p className="text-sm text-destructive">{errors.password.message}</p>
               )}
             </div>
 
@@ -135,10 +139,10 @@ export default function Signup() {
                 id="confirmPassword"
                 type="password"
                 {...register('confirmPassword')}
-                className={errors.confirmPassword ? 'border-red-500' : ''}
+                className={errors.confirmPassword ? 'border-destructive' : ''}
               />
               {errors.confirmPassword && (
-                <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>
+                <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
               )}
             </div>
           </div>
@@ -149,7 +153,10 @@ export default function Signup() {
             disabled={isLoading}
           >
             {isLoading ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Creating account...
+              </>
             ) : (
               <>
                 Create Account
@@ -160,11 +167,11 @@ export default function Signup() {
         </form>
 
         <div className="mt-4 text-center">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-sm text-muted-foreground">
             Already have an account?{' '}
             <Link
-              to="/login"
-              className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
+              to="/#/login"
+              className="font-medium text-primary hover:text-primary/90"
             >
               Sign in
             </Link>
@@ -172,5 +179,5 @@ export default function Signup() {
         </div>
       </div>
     </div>
-  )
+  );
 }
