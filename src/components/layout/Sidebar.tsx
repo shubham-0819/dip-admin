@@ -12,7 +12,11 @@ import {
   MailOpen,
   LogOut,
   ShieldCheck,
-  Scroll
+  Scroll,
+  Users,
+  AlertCircle,
+  Pill,
+  TestTube
 } from 'lucide-react'
 import dipLogoDark from '../../public/dip-logo-dark.svg'
 import dipLogoLight from '../../public/dip-logo-light.svg'
@@ -27,6 +31,10 @@ const navItems = [
   { icon: MailOpen, label: 'Invitation', path: '/dashboard/invitation' },
   { icon: Smartphone, label: 'APK Links', path: '/dashboard/apk-links' },
   { icon: ShieldCheck, label: 'Admins', path: '/dashboard/admins' },
+  { icon: Users, label: 'Sub Admins', path: '/dashboard/subadmins' },
+  { icon: AlertCircle, label: 'Problems', path: '/dashboard/problems' },
+  { icon: Pill, label: 'Medicines', path: '/dashboard/medicines' },
+  { icon: TestTube, label: 'Tests', path: '/dashboard/tests' },
   { icon: Settings, label: 'Admin Profile', path: '/dashboard/profile' },
   { icon: Scroll, label: 'Logs', path: '/dashboard/logs' },
 ]
@@ -62,7 +70,7 @@ export default function Sidebar({ isOpen }: SidebarProps) {
           )}
         </div>
         
-        <nav className="flex-1 p-4 space-y-2">
+        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
           {navItems.map((item) => {
             const Icon = item.icon
             return (
